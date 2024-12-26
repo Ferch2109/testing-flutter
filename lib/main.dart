@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Hello Word App',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 34, 200, 226)),
         ),
         home: MyHomePage(),
       ),
@@ -44,24 +44,64 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var current = appState.current;
+    var history = appState.history;
 
     return Scaffold(
-      body: Column(
-        children: [
-          Text('Random word:'),
-          Text(appState.current.asLowerCase),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            VarCard(pair: current),
+            SizedBox(height: 10),
+            Text(
+              "History",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            Text(history.join(',')),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                appState.increment();
+                appState.generate();
+              },
+              child: Text('New word'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-          Text('History'),
-          Text(appState.history.join(',')),
+class VarCard extends StatelessWidget {
+  const VarCard({
+    super.key,
+    required this.pair,
+  });
 
-          ElevatedButton(
-            onPressed: () {
-              appState.increment();
-              appState.generate();
-            },
-            child: Text('New word'),
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final style = theme.textTheme.labelMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+      fontWeight: FontWeight.w700,
+      fontSize: 14,
+    );
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Text(
+          pair.asLowerCase, 
+          style: style,
+          semanticsLabel: "${pair.first} ${pair.second}",
           ),
-        ],
       ),
     );
   }
